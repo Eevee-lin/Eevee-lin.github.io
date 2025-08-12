@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>车辆工程知识问答游戏</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#FF7D00',
+                        success: '#00B42A',
+                        danger: '#F53F3F',
+                        neutral: '#86909C',
+                        dark: '#1D2129',
+                        light: '#F2F3F5'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+            .progress-animation {
+                transition: width 1s linear;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-light to-gray-200 min-h-screen font-sans text-dark">
+    <!-- 页面容器 -->
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- 游戏标题 -->
+        <header class="text-center mb-8">
+            <div class="inline-block bg-primary text-white p-3 rounded-full mb-4">
+                <i class="fa fa-car text-3xl"></i>
+            </div>
+            <h1 class="text-[clamp(2rem,5vw,3rem)] font-bold text-dark text-shadow">
+                车辆工程知识问答
+            </h1>
+            <p class="text-neutral mt-2 text-lg">测试你的车辆工程专业知识，挑战高分！</p>
+        </header>
+
+        <!-- 开始界面 -->
+        <div id="start-screen" class="bg-white rounded-2xl shadow-lg p-8 mb-8 transition-all duration-500">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold mb-4">准备开始游戏</h2>
+                <p class="text-neutral">选择难度级别，开始你的车辆工程知识挑战</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-4 mb-8">
+                <div class="difficulty-card card-hover bg-white border-2 border-primary rounded-xl p-6 cursor-pointer" data-difficulty="easy">
+                    <div class="text-primary text-center mb-3">
+                        <i class="fa fa-signal text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-center mb-2">基础</h3>
+                    <p class="text-neutral text-center text-sm">适合初学者的基础知识</p>
+                </div>
+                
+                <div class="difficulty-card card-hover bg-white border-2 border-secondary rounded-xl p-6 cursor-pointer" data-difficulty="medium">
+                    <div class="text-secondary text-center mb-3">
+                        <i class="fa fa-signal text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-center mb-2">中级</h3>
+                    <p class="text-neutral text-center text-sm">需要一定专业知识</p>
+                </div>
+                
+                <div class="difficulty-card card-hover bg-white border-2 border-danger rounded-xl p-6 cursor-pointer" data-difficulty="hard">
+                    <div class="text-danger text-center mb-3">
+                        <i class="fa fa-signal text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-center mb-2">高级</h3>
+                    <p class="text-neutral text-center text-sm">挑战专业级知识点</p>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button id="start-btn" class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    开始游戏 <i class="fa fa-play ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 游戏界面 (默认隐藏) -->
+        <div id="game-screen" class="hidden">
+            <!-- 游戏状态信息 -->
+            <div class="bg-white rounded-xl shadow-md p-4 mb-6 flex flex-wrap justify-between items-center">
+                <div class="flex items-center mb-2 md:mb-0">
+                    <div class="mr-6">
+                        <span class="text-neutral text-sm">问题</span>
+                        <span id="question-count" class="font-bold text-lg ml-1">1/10</span>
+                    </div>
+                    <div>
+                        <span class="text-neutral text-sm">得分</span>
+                        <span id="score" class="font-bold text-lg ml-1 text-primary">0</span>
+                    </div>
+                </div>
+                
+                <div class="w-full md:w-auto">
+                    <div class="flex items-center">
+                        <span id="timer-text" class="text-neutral text-sm mr-2">剩余时间:</span>
+                        <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div id="timer-bar" class="h-full bg-primary progress-animation w-full"></div>
+                        </div>
+                        <span id="timer-seconds" class="ml-2 font-bold">15s</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 问题卡片 -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6 transition-all duration-500 transform">
+                <h2 id="question-text" class="text-xl md:text-2xl font-bold mb-6">问题将在这里显示</h2>
+                
+                <div id="answers-container" class="space-y-3">
+                    <!-- 答案选项将通过JS动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 答案反馈界面 (默认隐藏) -->
+        <div id="feedback-screen" class="hidden bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6">
+            <div id="correct-feedback" class="hidden text-center mb-6">
+                <div class="inline-block bg-success text-white p-3 rounded-full mb-4">
+                    <i class="fa fa-check text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-success">回答正确！</h3>
+            </div>
+            
+            <div id="incorrect-feedback" class="hidden text-center mb-6">
+                <div class="inline-block bg-danger text-white p-3 rounded-full mb-4">
+                    <i class="fa fa-times text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-danger">回答错误</h3>
+                <p class="mt-2">正确答案: <span id="correct-answer" class="font-bold"></span></p>
+            </div>
+            
+            <div class="mb-6">
+                <h4 class="font-bold text-lg mb-2">知识拓展</h4>
+                <p id="explanation" class="text-neutral"></p>
+            </div>
+            
+            <div class="text-center">
+                <button id="next-btn" class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-full transition-all duration-300">
+                    下一题 <i class="fa fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 游戏结束界面 (默认隐藏) -->
+        <div id="end-screen" class="hidden bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6 text-center">
+            <div class="inline-block bg-primary text-white p-4 rounded-full mb-6">
+                <i class="fa fa-trophy text-3xl"></i>
+            </div>
+            
+            <h2 class="text-2xl font-bold mb-2">游戏结束！</h2>
+            <p class="text-neutral mb-6">恭喜你完成了所有问题</p>
+            
+            <div class="grid md:grid-cols-3 gap-4 mb-8">
+                <div class="bg-light rounded-xl p-4">
+                    <p class="text-neutral text-sm">总得分</p>
+                    <p id="final-score" class="text-2xl font-bold text-primary">0</p>
+                </div>
+                
+                <div class="bg-light rounded-xl p-4">
+                    <p class="text-neutral text-sm">正确题数</p>
+                    <p id="correct-count" class="text-2xl font-bold text-success">0</p>
+                </div>
+                
+                <div class="bg-light rounded-xl p-4">
+                    <p class="text-neutral text-sm">错误题数</p>
+                    <p id="incorrect-count" class="text-2xl font-bold text-danger">0</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button id="restart-btn" class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-full transition-all duration-300">
+                    再玩一次 <i class="fa fa-refresh ml-2"></i>
+                </button>
+                
+                <button id="change-difficulty-btn" class="bg-white border-2 border-primary text-primary hover:bg-primary/10 font-bold py-3 px-8 rounded-full transition-all duration-300">
+                    更换难度 <i class="fa fa-sliders ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 游戏状态变量
+        const gameState = {
+            difficulty: null,
+            currentQuestion: 0,
+            score: 0,
+            correctAnswers: 0,
+            incorrectAnswers: 0,
+            timer: null,
+            timeLeft: 15,
+            questions: []
+        };
+
+        // 题库 - 车辆工程相关问题
+        const questionBank = {
+            easy: [
+                {
+                    question: "汽车发动机的工作循环不包括以下哪个过程？",
+                    answers: ["进气", "压缩", "燃烧", "冷却"],
+                    correctAnswer: 3,
+                    explanation: "汽车发动机的四个工作循环是进气、压缩、做功（燃烧）和排气。冷却虽然对发动机正常运行至关重要，但不属于发动机的基本工作循环。"
+                },
+                {
+                    question: "以下哪种不是汽车的传动方式？",
+                    answers: ["前驱", "后驱", "四驱", "侧驱"],
+                    correctAnswer: 3,
+                    explanation: "常见的汽车传动方式包括前驱（发动机驱动前轮）、后驱（发动机驱动后轮）和四驱（发动机驱动所有四个车轮）。侧驱并不是汽车常用的传动方式。"
+                },
+                {
+                    question: "ABS系统的主要作用是什么？",
+                    answers: ["提高加速性能", "防止刹车时车轮抱死", "降低油耗", "增强转向手感"],
+                    correctAnswer: 1,
+                    explanation: "ABS（防抱死制动系统）的主要作用是在紧急制动时防止车轮抱死，使驾驶员仍能保持转向控制，从而避免车辆失控和减少制动距离。"
+                },
+                {
+                    question: "汽车蓄电池的标称电压通常是多少？",
+                    answers: ["6V", "12V", "24V", "36V"],
+                    correctAnswer: 1,
+                    explanation: "大多数乘用车和轻型商用车使用12V蓄电池作为标准电源，用于启动发动机、为电气系统供电等。大型车辆可能使用24V系统。"
+                },
+                {
+                    question: "以下哪种不属于汽车悬挂系统的组成部分？",
+                    answers: ["弹簧", "减震器", "转向节", "稳定杆"],
+                    correctAnswer: 2,
+                    explanation: "汽车悬挂系统通常包括弹簧、减震器和稳定杆等部件，用于吸收路面颠簸并保持车身稳定。转向节属于转向系统的一部分，连接转向机构和车轮。"
+                },
+                {
+                    question: "手动变速箱通常比自动变速箱具有什么优势？",
+                    answers: ["操作更简单", "燃油经济性更好", "维护成本更高", "适合新手驾驶"],
+                    correctAnswer: 1,
+                    explanation: "手动变速箱通常比自动变速箱具有更好的燃油经济性，因为它的动力传递效率更高，且没有自动变速箱的液力变矩器能量损失。但它操作更复杂，需要驾驶员手动换挡。"
+                },
+                {
+                    question: "汽车的轴距指的是什么？",
+                    answers: ["前后轮之间的距离", "左右轮之间的距离", "车身的总长度", "发动机的排量"],
+                    correctAnswer: 0,
+                    explanation: "轴距是指汽车前轴中心到后轴中心的水平距离。轴距长短会影响车辆的乘坐空间、操控性和稳定性。较长的轴距通常提供更大的内部空间，但可能降低操控灵活性。"
+                },
+                {
+                    question: "涡轮增压系统的主要作用是什么？",
+                    answers: ["增加发动机功率", "降低发动机噪音", "减少尾气排放", "提高燃油经济性"],
+                    correctAnswer: 0,
+                    explanation: "涡轮增压系统通过压缩进入发动机的空气，使更多的空气和燃油混合燃烧，从而在不增加发动机排量的情况下显著提高发动机的功率和扭矩输出。"
+                },
+                {
+                    question: "以下哪种油液不用于汽车发动机润滑？",
+                    answers: ["发动机机油", "变速箱油", "刹车油", "齿轮油"],
+                    correctAnswer: 2,
+                    explanation: "刹车油用于液压制动系统中传递制动力，不用于润滑。发动机机油润滑发动机内部部件，变速箱油润滑变速箱，齿轮油润滑差速器等齿轮机构。"
+                },
+                {
+                    question: "汽车的VIN码包含多少位字符？",
+                    answers: ["10位", "17位", "20位", "25位"],
+                    correctAnswer: 1,
+                    explanation: "VIN（车辆识别号码）是一个17位的字母数字编码，用于唯一标识一辆汽车。它包含了车辆制造商、生产年份、车型、发动机类型等重要信息。"
+                }
+            ],
+            medium: [
+                {
+                    question: "发动机压缩比过高容易导致什么问题？",
+                    answers: ["动力下降", "爆震", "油耗增加", "排放超标"],
+                    correctAnswer: 1,
+                    explanation: "压缩比过高会使气缸内混合气在火花塞点火前因高温高压而自行燃烧，引起爆震（敲缸），这会导致发动机功率下降、油耗增加，严重时可能损坏发动机部件。"
+                },
+                {
+                    question: "多连杆独立悬挂相比麦弗逊悬挂的主要优势是什么？",
+                    answers: ["结构更简单", "成本更低", "操控性和舒适性更好", "维修更方便"],
+                    correctAnswer: 2,
+                    explanation: "多连杆独立悬挂通过多个控制臂可以更精确地控制车轮的运动轨迹，提供更好的操控性和乘坐舒适性。但它结构复杂、成本高、占用空间大，相比之下麦弗逊悬挂更简单经济。"
+                },
+                {
+                    question: "柴油发动机与汽油发动机的主要区别在于？",
+                    answers: ["燃料不同", "点火方式不同", "气缸数量不同", "冷却方式不同"],
+                    correctAnswer: 1,
+                    explanation: "虽然柴油发动机和汽油发动机使用的燃料不同，但最根本的区别是点火方式：汽油发动机采用火花塞点燃混合气（点燃式），而柴油发动机通过压缩使空气温度升高到柴油的自燃点（压燃式），无需火花塞。"
+                },
+                {
+                    question: "ESP系统的主要功能是什么？",
+                    answers: ["提高加速性能", "增强制动效果", "防止车辆侧滑失控", "降低发动机噪音"],
+                    correctAnswer: 2,
+                    explanation: "ESP（电子稳定程序）通过监测车辆行驶状态，当检测到车辆即将发生侧滑或失控时，会自动对个别车轮施加制动或调整发动机输出，帮助驾驶员保持车辆控制，提高行驶安全性。"
+                },
+                {
+                    question: "以下哪种不是混合动力汽车的动力组合方式？",
+                    answers: ["串联式", "并联式", "混联式", "交叉式"],
+                    correctAnswer: 3,
+                    explanation: "混合动力汽车常见的动力组合方式有串联式（发动机驱动发电机，电动机驱动车轮）、并联式（发动机和电动机可分别或同时驱动车轮）和混联式（结合了串联和并联的特点）。交叉式不是标准的混合动力组合方式。"
+                },
+                {
+                    question: "汽车发动机的配气机构中，正时链条的作用是？",
+                    answers: ["连接曲轴和凸轮轴，保证气门正时", "传递动力到变速箱", "驱动水泵和发电机", "减少发动机振动"],
+                    correctAnswer: 0,
+                    explanation: "正时链条（或正时皮带）连接发动机的曲轴和凸轮轴，确保气门的开启和关闭与活塞的运动保持精确的时间关系（配气正时）。如果正时错误，可能导致气门和活塞碰撞，严重损坏发动机。"
+                },
+                {
+                    question: "盘式制动器相比鼓式制动器的主要优势是？",
+                    answers: ["制造成本更低", "制动性能更稳定，散热更好", "结构更简单", "维护更方便"],
+                    correctAnswer: 1,
+                    explanation: "盘式制动器的制动盘暴露在空气中，散热性能远好于鼓式制动器，在连续制动时不易出现制动衰减（热衰退），制动性能更稳定。但它制造成本较高，结构相对复杂。"
+                },
+                {
+                    question: "车辆的离去角指的是什么？",
+                    answers: ["车辆前端最底点与前轮中心的连线和地面的夹角", "车辆后端最底点与后轮中心的连线和地面的夹角", "车辆前后轮中心连线与地面的夹角", "车辆最大转向角度"],
+                    correctAnswer: 1,
+                    explanation: "离去角是衡量车辆通过性的重要参数，指车辆静止时，车辆后端最底点与后轮中心的连线和地面之间的最大夹角。离去角越大，车辆越容易驶离陡坡或障碍物而不刮到底盘。"
+                },
+                {
+                    question: "发动机的EGR系统主要作用是？",
+                    answers: ["提高发动机功率", "减少氮氧化物排放", "降低燃油消耗", "改善发动机冷启动性能"],
+                    correctAnswer: 1,
+                    explanation: "EGR（废气再循环）系统将一部分废气引入进气系统，与新鲜空气混合后进入气缸。这会降低燃烧温度，减少氮氧化物（NOx）的生成，从而降低有害排放物。"
+                },
+                {
+                    question: "汽车的主减速器主要作用是？",
+                    answers: ["改变动力传递方向", "降低转速，增大扭矩", "实现倒车功能", "分配动力到左右车轮"],
+                    correctAnswer: 1,
+                    explanation: "主减速器是汽车传动系统的重要组成部分，其主要功能是降低从变速箱传来的转速，同时相应增大扭矩，并改变动力传递方向（通常将纵向传递的动力转为横向传递给驱动轮）。"
+                }
+            ],
+            hard: [
+                {
+                    question: "在发动机管理系统中，氧传感器的主要作用是？",
+                    answers: ["监测发动机温度", "检测进气量", "控制燃油喷射量", "监测排气中的氧气含量，以优化空燃比"],
+                    correctAnswer: 3,
+                    explanation: "氧传感器安装在排气管中，用于监测废气中的氧气含量，ECU（发动机控制单元）根据其信号调整燃油喷射量，使空燃比保持在理想的化学计量比附近（通常为14.7:1），以保证完全燃烧，减少排放并提高燃油经济性。"
+                },
+                {
+                    question: "车辆动力学中的不足转向(Understeer)指的是？",
+                    answers: ["车辆转弯半径比驾驶员预期的大", "车辆转弯半径比驾驶员预期的小", "车辆在转弯时发生侧滑", "车辆在加速时出现转向偏差"],
+                    correctAnswer: 0,
+                    explanation: "不足转向是指车辆在转弯时，实际转向半径大于驾驶员通过转向盘输入的预期转向半径，车辆有继续沿直线行驶的趋势。这种特性通常被认为更安全，尤其是对于普通驾驶员，因为它更容易预测和控制。"
+                },
+                {
+                    question: "以下哪种不是汽车轻量化材料？",
+                    answers: ["高强度钢", "铝合金", "镁合金", "铸铁"],
+                    correctAnswer: 3,
+                    explanation: "铸铁密度大、重量重，不属于轻量化材料。现代汽车为了降低油耗和提高性能，越来越多地采用高强度钢、铝合金、镁合金等轻量化材料，在保证强度的同时减轻车身重量。"
+                },
+                {
+                    question: "发动机的可变气门正时技术（如VTEC、VVT-i）的主要目的是？",
+                    answers: ["仅提高高速时的功率输出", "仅改善低速时的扭矩和经济性", "在不同转速下优化气门正时，兼顾高低速性能", "简化发动机结构，降低成本"],
+                    correctAnswer: 2,
+                    explanation: "可变气门正时技术允许发动机在不同转速下改变气门的开启和关闭时间，在低速时提供更优的扭矩和燃油经济性，在高速时则优化进气量以提高功率输出，从而在各种工况下都能获得最佳性能。"
+                },
+                {
+                    question: "在车辆制动系统中，制动力分配(EBD)系统的作用是？",
+                    answers: ["根据车辆负载自动调整前后轮制动力比例", "防止车轮抱死", "缩短制动距离", "提高制动踏板感觉"],
+                    correctAnswer: 0,
+                    explanation: "EBD（电子制动力分配）系统与ABS配合工作，根据车辆负载、路面条件和制动强度等因素，自动调整前后轮的制动力分配比例，确保前后轮同时达到最佳制动效果，提高制动安全性和稳定性。"
+                },
+                {
+                    question: "汽车空气动力学中，升力系数(Cd)的降低主要有助于？",
+                    answers: ["提高最高车速", "降低风噪", "减少空气阻力，提高燃油经济性", "改善车辆操控性"],
+                    correctAnswer: 2,
+                    explanation: "升力系数(Cd)是衡量车辆空气动力学性能的重要指标，Cd值越低，空气阻力越小。降低空气阻力可以显著提高燃油经济性，尤其是在高速行驶时，因为克服空气阻力所消耗的能量占总能耗的比例很大。"
+                },
+                {
+                    question: "以下哪种不是电动汽车电池管理系统(BMS)的主要功能？",
+                    answers: ["监测电池状态", "均衡各单体电池电压", "控制电池充电和放电过程", "提高电池能量密度"],
+                    correctAnswer: 3,
+                    explanation: "电池管理系统(BMS)的主要功能包括监测电池的电压、电流、温度等状态参数，实现各单体电池的电压均衡，防止电池过充、过放和过热，确保电池安全高效工作。但它不能提高电池本身的能量密度，这是由电池的化学特性和制造工艺决定的。"
+                },
+                {
+                    question: "发动机的压缩比是指？",
+                    answers: ["气缸总容积与燃烧室容积之比", "气缸工作容积与燃烧室容积之比", "气缸直径与行程之比", "进气量与排气量之比"],
+                    correctAnswer: 0,
+                    explanation: "压缩比是发动机的重要参数，定义为气缸总容积（活塞在下止点时气缸的容积）与燃烧室容积（活塞在上止点时气缸内的容积）之比。压缩比影响发动机的动力性、经济性和爆震特性。"
+                },
+                {
+                    question: "在车辆悬架系统中，阻尼系数的选择主要影响？",
+                    answers: ["车身高度", "车轮定位参数", "车辆的振动衰减特性", "承载能力"],
+                    correctAnswer: 2,
+                    explanation: "阻尼系数是减震器的关键参数，决定了悬架系统振动衰减的速度。较高的阻尼系数会使振动衰减更快，但可能影响舒适性；较低的阻尼系数会使振动持续时间更长，但乘坐更舒适。工程师需要在舒适性和操控性之间找到平衡。"
+                },
+                {
+                    question: "车辆的侧倾中心高度对以下哪项影响最大？",
+                    answers: ["直线行驶稳定性", "制动性能", "转向精准度", "转弯时的侧倾特性"],
+                    correctAnswer: 3,
+                    explanation: "侧倾中心是车辆悬架系统的一个虚拟点，是车身相对地面转动的瞬时中心。侧倾中心高度直接影响车辆转弯时的侧倾特性：侧倾中心越高，车身侧倾越小，但可能增加轮胎接地负荷的变化，影响抓地力；侧倾中心过低则会导致较大的车身侧倾。"
+                }
+            ]
+        };
+
+        // DOM元素
+        const elements = {
+            startScreen: document.getElementById('start-screen'),
+            gameScreen: document.getElementById('game-screen'),
+            feedbackScreen: document.getElementById('feedback-screen'),
+            endScreen: document.getElementById('end-screen'),
+            difficultyCards: document.querySelectorAll('.difficulty-card'),
+            startBtn: document.getElementById('start-btn'),
+            questionText: document.getElementById('question-text'),
+            answersContainer: document.getElementById('answers-container'),
+            questionCount: document.getElementById('question-count'),
+            score: document.getElementById('score'),
+            timerBar: document.getElementById('timer-bar'),
+            timerSeconds: document.getElementById('timer-seconds'),
+            correctFeedback: document.getElementById('correct-feedback'),
+            incorrectFeedback: document.getElementById('incorrect-feedback'),
+            correctAnswer: document.getElementById('correct-answer'),
+            explanation: document.getElementById('explanation'),
+            nextBtn: document.getElementById('next-btn'),
+            finalScore: document.getElementById('final-score'),
+            correctCount: document.getElementById('correct-count'),
+            incorrectCount: document.getElementById('incorrect-count'),
+            restartBtn: document.getElementById('restart-btn'),
+            changeDifficultyBtn: document.getElementById('change-difficulty-btn')
+        };
+
+        // 初始化事件监听
+        function initEventListeners() {
+            // 难度选择
+            elements.difficultyCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    // 移除其他卡片的选中状态
+                    elements.difficultyCards.forEach(c => {
+                        c.classList.remove('bg-primary/10', 'bg-secondary/10', 'bg-danger/10');
+                    });
+                    
+                    // 设置当前选中的难度
+                    gameState.difficulty = card.dataset.difficulty;
+                    
+                    // 添加选中状态样式
+                    if (gameState.difficulty === 'easy') {
+                        card.classList.add('bg-primary/10');
+                    } else if (gameState.difficulty === 'medium') {
+                        card.classList.add('bg-secondary/10');
+                    } else {
+                        card.classList.add('bg-danger/10');
+                    }
+                    
+                    // 启用开始按钮
+                    elements.startBtn.disabled = false;
+                });
+            });
+            
+            // 开始游戏按钮
+            elements.startBtn.addEventListener('click', startGame);
+            
+            // 下一题按钮
+            elements.nextBtn.addEventListener('click', showNextQuestion);
+            
+            // 重新开始按钮
+            elements.restartBtn.addEventListener('click', restartGame);
+            
+            // 更换难度按钮
+            elements.changeDifficultyBtn.addEventListener('click', resetGame);
+        }
+
+        // 开始游戏
+        function startGame() {
+            // 初始化游戏状态
+            gameState.currentQuestion = 0;
+            gameState.score = 0;
+            gameState.correctAnswers = 0;
+            gameState.incorrectAnswers = 0;
+            
+            // 根据难度选择题库
+            gameState.questions = [...questionBank[gameState.difficulty]];
+            
+            // 打乱题目顺序
+            shuffleArray(gameState.questions);
+            
+            // 更新分数显示
+            elements.score.textContent = gameState.score;
+            
+            // 隐藏开始界面，显示游戏界面
+            elements.startScreen.classList.add('hidden');
+            elements.gameScreen.classList.remove('hidden');
+            
+            // 显示第一题
+            showQuestion(gameState.currentQuestion);
+        }
+
+        // 显示问题
+        function showQuestion(index) {
+            // 清除之前的答案
+            elements.answersContainer.innerHTML = '';
+            
+            // 获取当前问题
+            const question = gameState.questions[index];
+            
+            // 更新问题文本
+            elements.questionText.textContent = question.question;
+            
+            // 更新问题计数
+            elements.questionCount.textContent = `${index + 1}/${gameState.questions.length}`;
+            
+            // 创建答案选项
+            question.answers.forEach((answer, i) => {
+                const answerDiv = document.createElement('div');
+                answerDiv.className = 'answer-option card-hover border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all duration-200';
+                answerDiv.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 rounded-full border-2 border-neutral flex-shrink-0 mr-3 flex items-center justify-center">
+                            <span class="text-sm font-bold">${String.fromCharCode(65 + i)}</span>
+                        </div>
+                        <span>${answer}</span>
+                    </div>
+                `;
+                
+                // 添加点击事件
+                answerDiv.addEventListener('click', () => {
+                    checkAnswer(i, question.correctAnswer, question.answers[question.correctAnswer], question.explanation);
+                });
+                
+                elements.answersContainer.appendChild(answerDiv);
+            });
+            
+            // 启动计时器
+            startTimer();
+        }
+
+        // 启动计时器
+        function startTimer() {
+            // 清除之前的计时器
+            if (gameState.timer) {
+                clearInterval(gameState.timer);
+            }
+            
+            // 重置时间
+            gameState.timeLeft = 15;
+            elements.timerBar.style.width = '100%';
+            elements.timerSeconds.textContent = '15s';
+            
+            // 设置新计时器
+            gameState.timer = setInterval(() => {
+                gameState.timeLeft--;
+                elements.timerSeconds.textContent = `${gameState.timeLeft}s`;
+                elements.timerBar.style.width = `${(gameState.timeLeft / 15) * 100}%`;
+                
+                // 时间到，自动判错
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(gameState.timer);
+                    const question = gameState.questions[gameState.currentQuestion];
+                    checkAnswer(-1, question.correctAnswer, question.answers[question.correctAnswer], question.explanation);
+                }
+            }, 1000);
+        }
+
+        // 检查答案
+        function checkAnswer(selectedIndex, correctIndex, correctAnswerText, explanation) {
+            // 停止计时器
+            clearInterval(gameState.timer);
+            
+            // 判断答案是否正确
+            const isCorrect = selectedIndex === correctIndex;
+            
+            // 更新分数和计数
+            if (isCorrect) {
+                // 根据难度和剩余时间计算得分
+                let points = 10;
+                if (gameState.difficulty === 'medium') points = 15;
+                if (gameState.difficulty === 'hard') points = 20;
+                
+                // 时间奖励
+                points += Math.floor(gameState.timeLeft / 3);
+                
+                gameState.score += points;
+                gameState.correctAnswers++;
+                elements.correctFeedback.classList.remove('hidden');
+                elements.incorrectFeedback.classList.add('hidden');
+            } else {
+                gameState.incorrectAnswers++;
+                elements.incorrectFeedback.classList.remove('hidden');
+                elements.correctFeedback.classList.add('hidden');
+                elements.correctAnswer.textContent = correctAnswerText;
+            }
+            
+            // 更新解释
+            elements.explanation.textContent = explanation;
+            
+            // 更新分数显示
+            elements.score.textContent = gameState.score;
+            
+            // 高亮正确和错误的答案
+            const answerOptions = document.querySelectorAll('.answer-option');
+            answerOptions.forEach((option, i) => {
+                // 移除点击事件
+                option.style.pointerEvents = 'none';
+                
+                if (i === correctIndex) {
+                    // 正确答案
+                    option.classList.remove('border-gray-200', 'hover:border-primary', 'hover:bg-primary/5');
+                    option.classList.add('border-success', 'bg-success/5');
+                    option.querySelector('.w-6').classList.remove('border-neutral');
+                    option.querySelector('.w-6').classList.add('border-success', 'bg-success', 'text-white');
+                    option.querySelector('.w-6 span').textContent = '✓';
+                } else if (i === selectedIndex && selectedIndex !== -1) {
+                    // 错误选择
+                    option.classList.remove('border-gray-200', 'hover:border-primary', 'hover:bg-primary/5');
+                    option.classList.add('border-danger', 'bg-danger/5');
+                    option.querySelector('.w-6').classList.remove('border-neutral');
+                    option.querySelector('.w-6').classList.add('border-danger', 'bg-danger', 'text-white');
+                    option.querySelector('.w-6 span').textContent = '✗';
+                }
+            });
+            
+            // 隐藏游戏界面，显示反馈界面
+            setTimeout(() => {
+                elements.gameScreen.classList.add('hidden');
+                elements.feedbackScreen.classList.remove('hidden');
+            }, 1000);
+        }
+
+        // 显示下一题
+        function showNextQuestion() {
+            gameState.currentQuestion++;
+            
+            // 检查是否还有问题
+            if (gameState.currentQuestion < gameState.questions.length) {
+                // 显示下一题
+                elements.feedbackScreen.classList.add('hidden');
+                elements.gameScreen.classList.remove('hidden');
+                showQuestion(gameState.currentQuestion);
+            } else {
+                // 游戏结束
+                endGame();
+            }
+        }
+
+        // 游戏结束
+        function endGame() {
+            // 隐藏反馈界面，显示结束界面
+            elements.feedbackScreen.classList.add('hidden');
+            elements.endScreen.classList.remove('hidden');
+            
+            // 更新最终统计
+            elements.finalScore.textContent = gameState.score;
+            elements.correctCount.textContent = gameState.correctAnswers;
+            elements.incorrectCount.textContent = gameState.incorrectAnswers;
+        }
+
+        // 重新开始游戏
+        function restartGame() {
+            elements.endScreen.classList.add('hidden');
+            startGame();
+        }
+
+        // 重置游戏（返回难度选择）
+        function resetGame() {
+            // 清除计时器
+            if (gameState.timer) {
+                clearInterval(gameState.timer);
+            }
+            
+            // 重置难度选择
+            elements.difficultyCards.forEach(card => {
+                card.classList.remove('bg-primary/10', 'bg-secondary/10', 'bg-danger/10');
+            });
+            gameState.difficulty = null;
+            elements.startBtn.disabled = true;
+            
+            // 显示开始界面，隐藏其他界面
+            elements.endScreen.classList.add('hidden');
+            elements.gameScreen.classList.add('hidden');
+            elements.feedbackScreen.classList.add('hidden');
+            elements.startScreen.classList.remove('hidden');
+        }
+
+        // 打乱数组顺序（Fisher-Yates洗牌算法）
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // 初始化游戏
+        function init() {
+            initEventListeners();
+        }
+
+        // 启动游戏
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
