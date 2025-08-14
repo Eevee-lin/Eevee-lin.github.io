@@ -1,0 +1,965 @@
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>车辆工程知识问答挑战</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#FF4D4F',
+                        accent: '#FF9800',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+            }
+            .btn-primary {
+                @apply bg-primary text-white font-medium py-2 px-6 rounded-lg transition-all duration-300 hover:bg-primary/90 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/50;
+            }
+            .btn-secondary {
+                @apply bg-white text-dark border border-gray-300 font-medium py-2 px-6 rounded-lg transition-all duration-300 hover:bg-gray-50 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-200;
+            }
+            .reserved-image-container {
+                @apply w-32 h-32 md:w-40 md:h-40 rounded-full bg-primary/10 flex items-center justify-center text-gray-400 mx-auto mb-4 overflow-hidden relative;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-light to-gray-100 min-h-screen font-sans text-dark relative">
+    
+    <!-- 顶部导航栏 -->
+    <header class="bg-white/80 backdrop-blur-md shadow-sm fixed w-full top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <i class="fa fa-car text-primary text-2xl"></i>
+                    <h1 class="text-xl font-bold text-primary">车辆工程知识挑战</h1>
+                </div>
+            </div>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#" class="text-gray-600 hover:text-primary transition-colors" id="rules-link">游戏规则</a>
+                <a href="#" class="text-gray-600 hover:text-primary transition-colors" id="about-link">关于车辆工程</a>
+            </div>
+            <button class="md:hidden text-gray-600" id="mobile-menu-btn">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- 移动端菜单 -->
+        <div class="md:hidden hidden bg-white border-t" id="mobile-menu">
+            <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+                <a href="#" class="text-gray-600 hover:text-primary py-2 transition-colors" id="mobile-rules-link">游戏规则</a>
+                <a href="#" class="text-gray-600 hover:text-primary py-2 transition-colors" id="mobile-about-link">关于车辆工程</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 pt-24 pb-16 relative z-10">
+        <!-- 开始界面 -->
+        <section id="start-screen" class="max-w-3xl mx-auto text-center py-10">
+            <div class="mb-10">
+                <!-- 预留图片位置 - 移除了上传功能 -->
+                <div class="reserved-image-container">
+                    <!-- 这里是预留的图片位置 -->
+                    <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/4f0f8712ac7847bcb394555bf58d479f~tplv-a9rns2rl98-image.image?rcl=202508141114548501DE1E1E055CD8AEE6&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1755746095&amp;x-signature=LitIHtc9cAfHzB1c0qphYc9MCEo%3D" alt="预留图片位置" class="w-full h-full object-cover opacity-100" id="reserved-image">               
+                </div>
+                
+                <h2 class="text-[clamp(1.8rem,5vw,2.5rem)] font-bold mb-4 text-dark">车辆工程知识挑战</h2>
+                <!-- 制作人信息 -->
+                <div class="flex items-center justify-center mb-4">
+                    <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/405d509073d0446bb9fcaad594ecd156~tplv-a9rns2rl98-image.image?rcl=20250814094516B1300A5B8E59F940F509&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1755740717&amp;x-signature=L7EPLSMp%2BmKBNPiHlse5QEIF6RU%3D" alt="小林老师头像" class="w-12 h-12 rounded-full mr-2"> 
+                    <p class="text-gray-700 text-base">游戏制作人：小林老师</p>
+                </div>
+                <p class="text-gray-600 text-lg mb-8">测试你的汽车构造、发动机原理和车辆系统知识</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                <h3 class="text-xl font-semibold mb-4">选择难度</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button class="difficulty-btn card-hover bg-green-50 border border-green-200 rounded-lg p-4" data-difficulty="easy">
+                        <div class="text-green-600 mb-2"><i class="fa fa-leaf text-2xl"></i></div>
+                        <h4 class="font-medium">初级</h4>
+                        <p class="text-sm text-gray-500 mt-1">基础车辆知识</p>
+                    </button>
+                    <button class="difficulty-btn card-hover bg-blue-50 border border-blue-200 rounded-lg p-4" data-difficulty="medium">
+                        <div class="text-blue-600 mb-2"><i class="fa fa-cogs text-2xl"></i></div>
+                        <h4 class="font-medium">中级</h4>
+                        <p class="text-sm text-gray-500 mt-1">深入车辆系统</p>
+                    </button>
+                    <button class="difficulty-btn card-hover bg-orange-50 border border-orange-200 rounded-lg p-4" data-difficulty="hard">
+                        <div class="text-orange-600 mb-2"><i class="fa fa-rocket text-2xl"></i></div>
+                        <h4 class="font-medium">高级</h4>
+                        <p class="text-sm text-gray-500 mt-1">专业工程知识</p>
+                    </button>
+                </div>
+            </div>
+            
+            <button id="start-btn" class="btn-primary text-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled="">
+                开始挑战 <i class="fa fa-arrow-right ml-2"></i>
+            </button>
+        </section>
+
+        <!-- 游戏界面 -->
+        <section id="game-screen" class="max-w-3xl mx-auto hidden">
+            <!-- 游戏状态 -->
+            <div class="flex justify-between items-center mb-6 bg-white rounded-lg shadow-sm p-4">
+                <div class="flex items-center">
+                    <div class="bg-primary/10 rounded-full p-2 mr-3">
+                        <i class="fa fa-clock-o text-primary"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">剩余时间</p>
+                        <p class="font-semibold" id="timer">30</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center">
+                    <div class="bg-accent/10 rounded-full p-2 mr-3">
+                        <i class="fa fa-flag text-accent"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">当前题目</p>
+                        <p class="font-semibold"><span id="current-question">1</span>/<span id="total-questions">10</span></p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center">
+                    <div class="bg-green-500/10 rounded-full p-2 mr-3">
+                        <i class="fa fa-trophy text-green-500"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">得分</p>
+                        <p class="font-semibold" id="score">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 题目卡片 -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-6 transform transition-all duration-500">
+                <h3 class="text-xl font-semibold mb-6" id="question-text">问题将在这里显示</h3>
+                
+                <div class="space-y-3" id="answers-container">
+                    <!-- 答案选项将通过JS动态生成 -->
+                </div>
+            </div>
+            
+            <div class="flex justify-between">
+                <button id="quit-btn" class="btn-secondary">
+                    <i class="fa fa-times mr-2"></i> 退出游戏
+                </button>
+                <button id="next-btn" class="btn-primary hidden">
+                    下一题 <i class="fa fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 结果界面 -->
+        <section id="result-screen" class="max-w-3xl mx-auto text-center hidden py-6">
+            <div class="mb-8">
+                <div class="inline-flex items-center justify-center w-32 h-32 rounded-full bg-primary/10 mb-6">
+                    <i class="fa fa-check-circle text-primary text-5xl"></i>
+                </div>
+                <h2 class="text-[clamp(1.5rem,4vw,2rem)] font-bold mb-2">挑战完成！</h2>
+                <p class="text-gray-600 mb-6">恭喜你完成了车辆工程知识挑战</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-md p-8 mb-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+                    <div class="p-4 rounded-lg bg-gray-50">
+                        <p class="text-sm text-gray-500 mb-1">总得分</p>
+                        <p class="text-2xl font-bold text-primary" id="final-score">0</p>
+                    </div>
+                    <div class="p-4 rounded-lg bg-gray-50">
+                        <p class="text-sm text-gray-500 mb-1">正确率</p>
+                        <p class="text-2xl font-bold text-primary" id="accuracy">0%</p>
+                    </div>
+                    <div class="p-4 rounded-lg bg-gray-50">
+                        <p class="text-sm text-gray-500 mb-1">正确题数</p>
+                        <p class="text-2xl font-bold text-green-500" id="correct-answers">0</p>
+                    </div>
+                    <div class="p-4 rounded-lg bg-gray-50">
+                        <p class="text-sm text-gray-500 mb-1">错误题数</p>
+                        <p class="text-2xl font-bold text-secondary" id="wrong-answers">0</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3">你的评价</h3>
+                    <p class="text-lg" id="feedback-text">继续努力，你会成为车辆工程专家！</p>
+                </div>
+                
+                <div class="w-full bg-gray-200 rounded-full h-4 mb-1">
+                    <div id="progress-bar" class="bg-primary h-4 rounded-full" style="width: 0%"></div>
+                </div>
+                <p class="text-sm text-gray-500" id="progress-text">完成度：0%</p>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button id="play-again-btn" class="btn-primary">
+                    <i class="fa fa-refresh mr-2"></i> 再玩一次
+                </button>
+                <button id="back-to-home-btn" class="btn-secondary">
+                    <i class="fa fa-home mr-2"></i> 返回主页
+                </button>
+            </div>
+        </section>
+
+        <!-- 规则模态框 -->
+        <div id="rules-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+                <div class="p-6 border-b">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold">游戏规则</h3>
+                        <button id="close-rules-btn" class="text-gray-500 hover:text-gray-700">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                            <p>游戏包含初级、中级和高级三个难度级别</p>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                            <p>每个级别有10道选择题，每题限时30秒</p>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                            <p>答对一题得10分，答错不扣分</p>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                            <p>超时未答题将视为答错</p>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                            <p>完成所有题目后将显示你的得分和评价</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 关于模态框 -->
+        <div id="about-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+                <div class="p-6 border-b">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold">关于车辆工程</h3>
+                        <button id="close-about-btn" class="text-gray-500 hover:text-gray-700">
+                            <i class="fa fa-times text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <p class="mb-4">车辆工程是机械工程的一个重要分支，主要研究汽车、摩托车、拖拉机、军用车辆及其他工程车辆等陆上移动机械的理论、设计及制造技术。</p>
+                    
+                    <h4 class="font-semibold text-lg mb-2 mt-4">主要研究领域</h4>
+                    <ul class="space-y-2 mb-4">
+                        <li class="flex items-start">
+                            <i class="fa fa-angle-right text-primary mt-1 mr-2"></i>
+                            <p>汽车构造与理论</p>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-angle-right text-primary mt-1 mr-2"></i>
+                            <p>发动机原理与设计</p>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-angle-right text-primary mt-1 mr-2"></i>
+                            <p>车辆动力学与控制</p>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-angle-right text-primary mt-1 mr-2"></i>
+                            <p>汽车电子与智能化</p>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-angle-right text-primary mt-1 mr-2"></i>
+                            <p>新能源汽车技术</p>
+                        </li>
+                    </ul>
+                    
+                    <p>通过这个游戏，你可以测试和扩展自己在车辆工程领域的知识，了解汽车的工作原理和构造。</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center items-center mb-4">
+                <i class="fa fa-car text-primary text-2xl mr-2"></i>
+                <h2 class="text-xl font-bold">车辆工程知识挑战</h2>
+            </div>
+            <p class="text-gray-400 text-sm">© 2023 车辆工程知识挑战. 旨在普及车辆工程基础知识.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 游戏数据 - 车辆工程相关问题
+        const quizData = {
+            easy: [
+                {
+                    question: "汽车发动机的四大冲程不包括以下哪一项？",
+                    answers: [
+                        { text: "进气冲程", correct: false },
+                        { text: "压缩冲程", correct: false },
+                        { text: "燃烧冲程", correct: true },
+                        { text: "排气冲程", correct: false }
+                    ]
+                },
+                {
+                    question: "汽车的动力传递顺序是？",
+                    answers: [
+                        { text: "发动机→变速箱→传动轴→车轮", correct: true },
+                        { text: "发动机→传动轴→变速箱→车轮", correct: false },
+                        { text: "变速箱→发动机→传动轴→车轮", correct: false },
+                        { text: "传动轴→发动机→变速箱→车轮", correct: false }
+                    ]
+                },
+                {
+                    question: "以下哪种不是汽车常用燃料？",
+                    answers: [
+                        { text: "汽油", correct: false },
+                        { text: "柴油", correct: false },
+                        { text: "天然气", correct: false },
+                        { text: "酒精", correct: true }
+                    ]
+                },
+                {
+                    question: "ABS系统的主要作用是？",
+                    answers: [
+                        { text: "提高加速性能", correct: false },
+                        { text: "防止制动时车轮抱死", correct: true },
+                        { text: "降低油耗", correct: false },
+                        { text: "增强转向性能", correct: false }
+                    ]
+                },
+                {
+                    question: "汽车的底盘不包括以下哪个系统？",
+                    answers: [
+                        { text: "传动系统", correct: false },
+                        { text: "行驶系统", correct: false },
+                        { text: "制动系统", correct: false },
+                        { text: "点火系统", correct: true }
+                    ]
+                },
+                {
+                    question: "以下哪种颜色的汽车在夜间行驶时最容易被看到？",
+                    answers: [
+                        { text: "黑色", correct: false },
+                        { text: "白色", correct: true },
+                        { text: "灰色", correct: false },
+                        { text: "蓝色", correct: false }
+                    ]
+                },
+                {
+                    question: "汽车轮胎上的花纹主要作用是？",
+                    answers: [
+                        { text: "美观", correct: false },
+                        { text: "增加摩擦力", correct: true },
+                        { text: "减少重量", correct: false },
+                        { text: "降低噪音", correct: false }
+                    ]
+                },
+                {
+                    question: "电动汽车与传统燃油汽车相比，最大的区别是？",
+                    answers: [
+                        { text: "没有方向盘", correct: false },
+                        { text: "使用电动机驱动", correct: true },
+                        { text: "速度更快", correct: false },
+                        { text: "价格更便宜", correct: false }
+                    ]
+                },
+                {
+                    question: "汽车仪表盘上的水温表指示过高时，可能是什么问题？",
+                    answers: [
+                        { text: "发动机过热", correct: true },
+                        { text: "燃油不足", correct: false },
+                        { text: "轮胎气压不足", correct: false },
+                        { text: "刹车系统故障", correct: false }
+                    ]
+                },
+                {
+                    question: "以下哪项不属于汽车安全装置？",
+                    answers: [
+                        { text: "安全气囊", correct: false },
+                        { text: "安全带", correct: false },
+                        { text: "倒车雷达", correct: false },
+                        { text: "涡轮增压", correct: true }
+                    ]
+                }
+            ],
+            medium: [
+                {
+                    question: "四缸发动机的点火顺序通常是？",
+                    answers: [
+                        { text: "1-2-3-4", correct: false },
+                        { text: "1-3-4-2", correct: true },
+                        { text: "1-4-2-3", correct: false },
+                        { text: "1-2-4-3", correct: false }
+                    ]
+                },
+                {
+                    question: "汽车悬挂系统的主要作用不包括？",
+                    answers: [
+                        { text: "吸收路面震动", correct: false },
+                        { text: "支撑车身重量", correct: false },
+                        { text: "传递驱动力矩", correct: true },
+                        { text: "保持车轮与路面接触", correct: false }
+                    ]
+                },
+                {
+                    question: "涡轮增压系统的主要作用是？",
+                    answers: [
+                        { text: "增加发动机功率", correct: true },
+                        { text: "降低发动机噪音", correct: false },
+                        { text: "减少发动机重量", correct: false },
+                        { text: "延长发动机寿命", correct: false }
+                    ]
+                },
+                {
+                    question: "汽车电池的正常电压范围是？",
+                    answers: [
+                        { text: "6-8V", correct: false },
+                        { text: "12-14V", correct: true },
+                        { text: "24-28V", correct: false },
+                        { text: "36-42V", correct: false }
+                    ]
+                },
+                {
+                    question: "以下哪种不是汽车传动系统的类型？",
+                    answers: [
+                        { text: "手动变速箱", correct: false },
+                        { text: "自动变速箱", correct: false },
+                        { text: "无级变速箱", correct: false },
+                        { text: "液压变速箱", correct: true }
+                    ]
+                },
+                {
+                    question: "汽车的前轮定位参数不包括？",
+                    answers: [
+                        { text: "主销后倾", correct: false },
+                        { text: "主销内倾", correct: false },
+                        { text: "前轮外倾", correct: false },
+                        { text: "轴距", correct: true }
+                    ]
+                },
+                {
+                    question: "混合动力汽车通常结合了哪种动力源？",
+                    answers: [
+                        { text: "汽油发动机和柴油发动机", correct: false },
+                        { text: "内燃机和电动机", correct: true },
+                        { text: "太阳能电池和燃料电池", correct: false },
+                        { text: "蓄电池和超级电容器", correct: false }
+                    ]
+                },
+                {
+                    question: "汽车ECU的主要功能是？",
+                    answers: [
+                        { text: "控制发动机运行参数", correct: true },
+                        { text: "调节车内温度", correct: false },
+                        { text: "管理音响系统", correct: false },
+                        { text: "监控轮胎压力", correct: false }
+                    ]
+                },
+                {
+                    question: "盘式制动器与鼓式制动器相比，优点不包括？",
+                    answers: [
+                        { text: "散热性能好", correct: false },
+                        { text: "制动效果更稳定", correct: false },
+                        { text: "结构更简单", correct: true },
+                        { text: "维护更方便", correct: false }
+                    ]
+                },
+                {
+                    question: "汽车的压缩比是指？",
+                    answers: [
+                        { text: "气缸总容积与燃烧室容积之比", correct: true },
+                        { text: "发动机功率与排量之比", correct: false },
+                        { text: "压缩冲程与做功冲程时间之比", correct: false },
+                        { text: "进气量与排气量之比", correct: false }
+                    ]
+                }
+            ],
+            hard: [
+                {
+                    question: "发动机的配气相位不包括以下哪个参数？",
+                    answers: [
+                        { text: "进气提前角", correct: false },
+                        { text: "排气迟后角", correct: false },
+                        { text: "气门重叠角", correct: false },
+                        { text: "压缩比", correct: true }
+                    ]
+                },
+                {
+                    question: "以下哪种不是电动汽车常用的驱动电机类型？",
+                    answers: [
+                        { text: "直流电机", correct: false },
+                        { text: "异步电机", correct: false },
+                        { text: "同步磁阻电机", correct: true },
+                        { text: "永磁同步电机", correct: false }
+                    ]
+                },
+                {
+                    question: "汽车的空气动力学特性中，CD值表示的是？",
+                    answers: [
+                        { text: "升力系数", correct: false },
+                        { text: "阻力系数", correct: true },
+                        { text: "侧偏系数", correct: false },
+                        { text: "俯仰系数", correct: false }
+                    ]
+                },
+                {
+                    question: "以下哪项不是影响发动机燃烧效率的主要因素？",
+                    answers: [
+                        { text: "空燃比", correct: false },
+                        { text: "点火提前角", correct: false },
+                        { text: "气门间隙", correct: true },
+                        { text: "压缩比", correct: false }
+                    ]
+                },
+                {
+                    question: "车辆动力学中，不足转向的特点是？",
+                    answers: [
+                        { text: "转向半径随车速增加而增大", correct: true },
+                        { text: "转向半径随车速增加而减小", correct: false },
+                        { text: "车辆容易发生侧滑", correct: false },
+                        { text: "方向盘需要不断修正", correct: false }
+                    ]
+                },
+                {
+                    question: "锂离子电池的SOC指的是？",
+                    answers: [
+                        { text: "电池容量", correct: false },
+                        { text: "荷电状态", correct: true },
+                        { text: "循环寿命", correct: false },
+                        { text: "能量密度", correct: false }
+                    ]
+                },
+                {
+                    question: "以下哪种不是汽车主动安全技术？",
+                    answers: [
+                        { text: "ESC电子稳定控制系统", correct: false },
+                        { text: "AEB自动紧急制动", correct: false },
+                        { text: "安全带预紧器", correct: true },
+                        { text: "LKA车道保持辅助", correct: false }
+                    ]
+                },
+                {
+                    question: "发动机热效率的理论最大值受限于？",
+                    answers: [
+                        { text: "卡诺循环", correct: true },
+                        { text: "奥托循环", correct: false },
+                        { text: "狄塞尔循环", correct: false },
+                        { text: "斯特林循环", correct: false }
+                    ]
+                },
+                {
+                    question: "汽车悬架系统的K&C特性指的是？",
+                    answers: [
+                        { text: "刚度和阻尼特性", correct: false },
+                        { text: "动力学和控制特性", correct: false },
+                        { text: "运动学和 Compliance 特性", correct: true },
+                        { text: "强度和疲劳特性", correct: false }
+                    ]
+                },
+                {
+                    question: "燃料电池汽车的核心化学反应是？",
+                    answers: [
+                        { text: "氢气与氧气反应生成水", correct: true },
+                        { text: "二氧化碳与水反应生成燃料", correct: false },
+                        { text: "电池内部的电解反应", correct: false },
+                        { text: "化石燃料的燃烧反应", correct: false }
+                    ]
+                }
+            ]
+        };
+
+        // 游戏状态变量
+        let currentQuestionIndex = 0;
+        let selectedDifficulty = null;
+        let questions = [];
+        let score = 0;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+        let timerInterval = null;
+        let timeLeft = 30;
+
+        // DOM 元素
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const startBtn = document.getElementById('start-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const quitBtn = document.getElementById('quit-btn');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        const backToHomeBtn = document.getElementById('back-to-home-btn');
+        const questionText = document.getElementById('question-text');
+        const answersContainer = document.getElementById('answers-container');
+        const currentQuestionEl = document.getElementById('current-question');
+        const totalQuestionsEl = document.getElementById('total-questions');
+        const scoreEl = document.getElementById('score');
+        const timerEl = document.getElementById('timer');
+        const finalScoreEl = document.getElementById('final-score');
+        const accuracyEl = document.getElementById('accuracy');
+        const correctAnswersEl = document.getElementById('correct-answers');
+        const wrongAnswersEl = document.getElementById('wrong-answers');
+        const feedbackTextEl = document.getElementById('feedback-text');
+        const progressBarEl = document.getElementById('progress-bar');
+        const progressTextEl = document.getElementById('progress-text');
+        
+        // 模态框元素
+        const rulesModal = document.getElementById('rules-modal');
+        const aboutModal = document.getElementById('about-modal');
+        const rulesLink = document.getElementById('rules-link');
+        const aboutLink = document.getElementById('about-link');
+        const mobileRulesLink = document.getElementById('mobile-rules-link');
+        const mobileAboutLink = document.getElementById('mobile-about-link');
+        const closeRulesBtn = document.getElementById('close-rules-btn');
+        const closeAboutBtn = document.getElementById('close-about-btn');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        // 事件监听器 - 难度选择
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 移除其他按钮的选中状态
+                document.querySelectorAll('.difficulty-btn').forEach(b => {
+                    b.classList.remove('ring-2', 'ring-primary', 'bg-primary/5');
+                });
+                
+                // 添加当前按钮的选中状态
+                btn.classList.add('ring-2', 'ring-primary', 'bg-primary/5');
+                
+                // 设置选中的难度
+                selectedDifficulty = btn.getAttribute('data-difficulty');
+                startBtn.disabled = false;
+            });
+        });
+
+        // 事件监听器 - 开始游戏
+        startBtn.addEventListener('click', startGame);
+
+        // 事件监听器 - 下一题
+        nextBtn.addEventListener('click', showNextQuestion);
+
+        // 事件监听器 - 退出游戏
+        quitBtn.addEventListener('click', quitGame);
+
+        // 事件监听器 - 再玩一次
+        playAgainBtn.addEventListener('click', restartGame);
+
+        // 事件监听器 - 返回主页
+        backToHomeBtn.addEventListener('click', goToHome);
+
+        // 模态框相关事件
+        rulesLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal(rulesModal);
+        });
+        
+        aboutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal(aboutModal);
+        });
+        
+        mobileRulesLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleMobileMenu();
+            openModal(rulesModal);
+        });
+        
+        mobileAboutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleMobileMenu();
+            openModal(aboutModal);
+        });
+        
+        closeRulesBtn.addEventListener('click', () => closeModal(rulesModal));
+        closeAboutBtn.addEventListener('click', () => closeModal(aboutModal));
+        
+        // 移动端菜单
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+
+        // 点击模态框外部关闭
+        rulesModal.addEventListener('click', (e) => {
+            if (e.target === rulesModal) closeModal(rulesModal);
+        });
+        
+        aboutModal.addEventListener('click', (e) => {
+            if (e.target === aboutModal) closeModal(aboutModal);
+        });
+
+        // 开始游戏函数
+        function startGame() {
+            // 初始化游戏状态
+            currentQuestionIndex = 0;
+            score = 0;
+            correctAnswers = 0;
+            wrongAnswers = 0;
+            
+            // 根据难度获取问题
+            questions = [...quizData[selectedDifficulty]];
+            
+            // 打乱问题顺序
+            questions.sort(() => Math.random() - 0.5);
+            
+            // 更新UI
+            startScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            scoreEl.textContent = score;
+            totalQuestionsEl.textContent = questions.length;
+            
+            // 显示第一题
+            showQuestion(questions[currentQuestionIndex]);
+        }
+
+        // 显示问题函数
+        function showQuestion(question) {
+            // 重置计时器
+            resetTimer();
+            
+            // 更新当前问题编号
+            currentQuestionEl.textContent = currentQuestionIndex + 1;
+            
+            // 显示问题文本
+            questionText.textContent = question.question;
+            
+            // 清空答案容器
+            answersContainer.innerHTML = '';
+            
+            // 隐藏下一题按钮
+            nextBtn.classList.add('hidden');
+            
+            // 打乱答案顺序
+            const shuffledAnswers = [...question.answers].sort(() => Math.random() - 0.5);
+            
+            // 创建答案按钮
+            shuffledAnswers.forEach((answer, index) => {
+                const answerBtn = document.createElement('button');
+                answerBtn.className = 'w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors';
+                answerBtn.innerHTML = `
+                    <span class="inline-block w-6 h-6 rounded-full border border-gray-300 mr-3 text-center leading-6">${String.fromCharCode(65 + index)}</span>
+                    ${answer.text}
+                `;
+                answerBtn.dataset.correct = answer.correct;
+                
+                // 添加点击事件
+                answerBtn.addEventListener('click', () => selectAnswer(answerBtn));
+                
+                answersContainer.appendChild(answerBtn);
+            });
+            
+            // 开始计时
+            startTimer();
+        }
+
+        // 选择答案函数
+        function selectAnswer(selectedBtn) {
+            // 停止计时器
+            stopTimer();
+            
+            // 禁用所有答案按钮
+            document.querySelectorAll('#answers-container button').forEach(btn => {
+                btn.disabled = true;
+                
+                // 显示正确答案
+                if (btn.dataset.correct === 'true') {
+                    btn.classList.add('bg-green-50', 'border-green-200');
+                    btn.innerHTML = `<i class="fa fa-check text-green-500 mr-3"></i>${btn.innerHTML.split('</span>')[1]}`;
+                }
+            });
+            
+            // 检查答案是否正确
+            if (selectedBtn.dataset.correct === 'true') {
+                // 正确答案
+                selectedBtn.classList.add('bg-green-50', 'border-green-500');
+                score += 10;
+                correctAnswers++;
+                scoreEl.textContent = score;
+            } else {
+                // 错误答案
+                selectedBtn.classList.add('bg-red-50', 'border-red-200');
+                selectedBtn.innerHTML = `<i class="fa fa-times text-red-500 mr-3"></i>${selectedBtn.innerHTML.split('</span>')[1]}`;
+                wrongAnswers++;
+            }
+            
+            // 显示下一题按钮
+            nextBtn.classList.remove('hidden');
+        }
+
+        // 显示下一题函数
+        function showNextQuestion() {
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < questions.length) {
+                // 还有问题，显示下一题
+                showQuestion(questions[currentQuestionIndex]);
+            } else {
+                // 没有问题了，显示结果
+                showResult();
+            }
+        }
+
+        // 显示结果函数
+        function showResult() {
+            // 停止计时器
+            stopTimer();
+            
+            // 更新结果UI
+            gameScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            // 计算正确率
+            const accuracy = Math.round((correctAnswers / questions.length) * 100);
+            
+            // 更新结果数据
+            finalScoreEl.textContent = score;
+            accuracyEl.textContent = `${accuracy}%`;
+            correctAnswersEl.textContent = correctAnswers;
+            wrongAnswersEl.textContent = wrongAnswers;
+            progressBarEl.style.width = `${accuracy}%`;
+            progressTextEl.textContent = `完成度：${accuracy}%`;
+            
+            // 根据得分设置反馈
+            let feedback = '';
+            if (accuracy === 100) {
+                feedback = '太棒了！你是车辆工程专家！';
+            } else if (accuracy >= 80) {
+                feedback = '非常出色！你的车辆工程知识很扎实。';
+            } else if (accuracy >= 60) {
+                feedback = '不错！继续学习可以成为专家。';
+            } else if (accuracy >= 40) {
+                feedback = '还可以，多了解一些车辆知识会更好。';
+            } else {
+                feedback = '继续努力，你会成为车辆工程专家的！';
+            }
+            feedbackTextEl.textContent = feedback;
+        }
+
+        // 退出游戏函数
+        function quitGame() {
+            if (confirm('确定要退出游戏吗？当前进度将会丢失。')) {
+                stopTimer();
+                gameScreen.classList.add('hidden');
+                startScreen.classList.remove('hidden');
+            }
+        }
+
+        // 重新开始游戏函数
+        function restartGame() {
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+
+        // 返回主页函数
+        function goToHome() {
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+
+        // 计时器函数
+        function startTimer() {
+            timeLeft = 30;
+            timerEl.textContent = timeLeft;
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = timeLeft;
+                
+                // 改变颜色提醒
+                if (timeLeft <= 10) {
+                    timerEl.classList.add('text-red-500');
+                } else {
+                    timerEl.classList.remove('text-red-500');
+                }
+                
+                // 时间到
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    wrongAnswers++;
+                    
+                    // 显示正确答案
+                    document.querySelectorAll('#answers-container button').forEach(btn => {
+                        btn.disabled = true;
+                        if (btn.dataset.correct === 'true') {
+                            btn.classList.add('bg-green-50', 'border-green-200');
+                            btn.innerHTML = `<i class="fa fa-check text-green-500 mr-3"></i>${btn.innerHTML.split('</span>')[1]}`;
+                        }
+                    });
+                    
+                    // 显示下一题按钮
+                    nextBtn.classList.remove('hidden');
+                }
+            }, 1000);
+        }
+
+        // 停止计时器函数
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        // 重置计时器函数
+        function resetTimer() {
+            stopTimer();
+            timerEl.classList.remove('text-red-500');
+        }
+
+        // 打开模态框函数
+        function openModal(modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 关闭模态框函数
+        function closeModal(modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+        
+        // 切换移动端菜单
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('hidden');
+        }
+
+        // 滚动时改变导航栏样式
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 10) {
+                header.classList.add('shadow');
+            } else {
+                header.classList.remove('shadow');
+            }
+        });
+    </script>
+
+
+    </body></html>
